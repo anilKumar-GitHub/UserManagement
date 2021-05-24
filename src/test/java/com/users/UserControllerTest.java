@@ -35,10 +35,10 @@ import com.users.services.UserService;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UserControllerTest {
-	
+
 	@InjectMocks
 	UserController userController;
-	
+
 	@Mock
 	UserService userService;
 
@@ -52,104 +52,104 @@ public class UserControllerTest {
 		list.add(new User(11L, "Karna", new Date(System.currentTimeMillis()), "Bangalore", "9876543210"));
 		list.add(new User(11L, "Karma", new Date(System.currentTimeMillis()), "Bangalore", "9876543211"));
 		list.add(new User(11L, "Katha", new Date(System.currentTimeMillis()), "Bangalore", "9876543212"));
-		
+
 		when(userService.getAllUsers()).thenReturn(list);
 
 		ResponseEntity<List<UserDTO>> response = userController.getAllUsers();
 		List<UserDTO> usersList = response.getBody();
-		
+
 		assertTrue(usersList.size() > 0);
 		assertEquals(3, usersList.size());
-		
+
 		verify(userService, times(1)).getAllUsers();
 	}
-	
+
 
 	/**
 	 * Test case: Get user by id
 	 */
 	@Test
-    public void getUserByIdTest()	{
-		
-        when(userService.getUserById(21L))
-        .thenReturn(new User(21L, "Rajesh", new Date(System.currentTimeMillis()), "Bangalore", "9060544800"));
-         
-        UserDTO user = userController.getUserById(21L).getBody();
+	public void getUserByIdTest()	{
 
-        assertNotNull(user);
-        assertEquals("Rajesh", user.getName());
-        assertEquals("Bangalore", user.getCity());
-        assertEquals("9060544800", user.getMobileNumber());
-    }
-	
-	
+		when(userService.getUserById(21L))
+		.thenReturn(new User(21L, "Rajesh", new Date(System.currentTimeMillis()), "Bangalore", "9060544800"));
+
+		UserDTO user = userController.getUserById(21L).getBody();
+
+		assertNotNull(user);
+		assertEquals("Rajesh", user.getName());
+		assertEquals("Bangalore", user.getCity());
+		assertEquals("9060544800", user.getMobileNumber());
+	}
+
+
 	/**
 	 * Negative test case for get user by id
 	 */
 	@Test
-    public void getUserByIdTest2()	{
-		
-        when(userService.getUserById(21L))
-        .thenReturn(new User(21L, "Rajesh", new Date(System.currentTimeMillis()), "Bangalore", "9060544800"));
+	public void getUserByIdTest2()	{
 
-        UserDTO user = userController.getUserById(21L).getBody();
-        
-        assertNotNull(user);
-        assertNotEquals(1, user.getId());
-    }
+		when(userService.getUserById(21L))
+		.thenReturn(new User(21L, "Rajesh", new Date(System.currentTimeMillis()), "Bangalore", "9060544800"));
 
-	
+		UserDTO user = userController.getUserById(21L).getBody();
+
+		assertNotNull(user);
+		assertNotEquals(1, user.getId());
+	}
+
+
 	/**
 	 * Test case for adding new user
 	 */
 	@Test
-    public void createUserByIdTest()	{
+	public void createUserByIdTest()	{
 
-        UserDTO userDto = new UserDTO(21L, "Sharan", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
-        User user = new User(21L, "Sharan", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
+		UserDTO userDto = new UserDTO(21L, "Sharan", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
+		User user = new User(21L, "Sharan", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
 
-        when(userService.addNewUserEntry(any(UserDTO.class))).thenReturn(user);
+		when(userService.addNewUserEntry(any(UserDTO.class))).thenReturn(user);
 
-        ResponseEntity<UserDTO> reponse = userController.addNewUser(userDto);
-        
-        assertNotNull(reponse.getBody());
-        assertEquals(HttpStatus.CREATED, reponse.getStatusCode());
-    }
+		ResponseEntity<UserDTO> reponse = userController.addNewUser(userDto);
 
-	
+		assertNotNull(reponse.getBody());
+		assertEquals(HttpStatus.CREATED, reponse.getStatusCode());
+	}
+
+
 	/**
 	 * Test case for adding new user
 	 */
 	@Test
-    public void updateUserTest()	{
+	public void updateUserTest()	{
 
-        UserDTO userDto = new UserDTO(21L, "Sham", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
-        User user = new User(21L, "Sham Rao", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
+		UserDTO userDto = new UserDTO(21L, "Sham", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
+		User user = new User(21L, "Sham Rao", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
 
-        when(userService.updateExistingUser(21L, userDto)).thenReturn(user);
+		when(userService.updateExistingUser(21L, userDto)).thenReturn(user);
 
-        ResponseEntity<UserDTO> response = userController.updateUser(21L, userDto);
- 
-        assertNotNull(response.getBody());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotEquals("Sham", response.getBody().getName());
-    }
-	
-	
+		ResponseEntity<UserDTO> response = userController.updateUser(21L, userDto);
+
+		assertNotNull(response.getBody());
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertNotEquals("Sham", response.getBody().getName());
+	}
+
+
 	/**
 	 * Test case for adding new user
 	 */
 	@Test
-    public void deleteUserByIdTest()	{
+	public void deleteUserByIdTest()	{
 
-        User user = new User(31L, "Devendra", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
+		User user = new User(31L, "Devendra", new Date(System.currentTimeMillis()), "Bangalore", "9060544800");
 
-        when(userService.deleteUser(any(Long.class))).thenReturn(user);
+		when(userService.deleteUser(any(Long.class))).thenReturn(user);
 
-        ResponseEntity<UserDTO> response = userController.deleteUser(21L);
+		ResponseEntity<UserDTO> response = userController.deleteUser(21L);
 
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Devendra", response.getBody().getName());
-    }	
+		assertNotNull(response);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals("Devendra", response.getBody().getName());
+	}	
 }
