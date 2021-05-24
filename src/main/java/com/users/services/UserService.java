@@ -2,8 +2,8 @@ package com.users.services;
 
 import java.util.List;
 
-import com.users.model.dto.UserDTO;
-import com.users.model.entity.User;
+import com.users.model.dtos.UserDTO;
+import com.users.model.entities.User;
 
 /**
  * User service interface

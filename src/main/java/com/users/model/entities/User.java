@@ -1,4 +1,4 @@
-package com.users.model.entity;
+package com.users.model.entities;
 
 import java.util.Date;
 
@@ -61,7 +61,7 @@ public class User {
 	 * @param mobileNum
 	 * @param city
 	 */
-	public User(Long id, String name, Date dob, String mobileNum, String city)	{
+	public User(Long id, String name, Date dob,  String city, String mobileNum)	{
 		
 		this.id = id;
 		this.name = name;

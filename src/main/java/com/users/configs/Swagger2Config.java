@@ -1,10 +1,13 @@
-package com.users.config;
+package com.users.configs;
 
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import springfox.documentation.annotations.ApiIgnore;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -21,6 +24,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
+@Controller
+@ApiIgnore
 public class Swagger2Config		{
 	
 	@Bean
@@ -44,5 +49,10 @@ public class Swagger2Config		{
                 new Contact("Anil Kumar", "https://www.linkedin.com/in/anilkumar-padasalagi/", "anilkumar81593@gmail.com"),
                 "License of API", "https://github.com/anilKumar-GitHub", Collections.emptyList());
     }
-
+    
+    
+	@RequestMapping("/")
+    public String swaggerUI() {
+    	return "redirect:/swagger-ui.html";
+    }
 }

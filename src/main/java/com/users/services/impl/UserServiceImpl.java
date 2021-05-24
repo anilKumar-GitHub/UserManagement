@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.users.exceptions.UserAlreadExistsException;
 import com.users.exceptions.UserNotFoundException;
-import com.users.model.dto.UserDTO;
-import com.users.model.entity.User;
+import com.users.model.dtos.UserDTO;
+import com.users.model.entities.User;
 import com.users.model.repositories.UserRepository;
 import com.users.services.UserService;
 import com.users.utils.ModelMapperUtil;
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 	public User getUserById(Long id) {
 
 		Optional<User> userOptional = this.userRepository.findById(id);
-		
+
 		if(userOptional.isEmpty())	{
 			throw new UserNotFoundException(id);
 		}

@@ -1,9 +1,9 @@
-package com.users.model.dto;
+package com.users.model.dtos;
 
 import java.util.Date;
 
-import com.users.controllers.UsersController;
-import com.users.model.entity.User;
+import com.users.controllers.UserController;
+import com.users.model.entities.User;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,12 +15,12 @@ import lombok.Data;
  * 
  * @author anilKumar
  * 
- * @see UsersController
+ * @see UserController
  */
 @Data
 @Builder
 @ApiModel(description = "Request/Response object for REST call service.")
-public class UserDTO {
+public class UserDTO extends AbstractDTO {
 
     @ApiModelProperty(notes = "The unique id of users.")
     private Long id;

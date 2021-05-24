@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.users.exceptions.UserNotFoundException;
-import com.users.model.dto.UserDTO;
-import com.users.model.entity.User;
+import com.users.model.dtos.UserDTO;
+import com.users.model.entities.User;
 import com.users.services.UserService;
 import com.users.utils.ModelMapperUtil;
 import com.users.utils.RestResponseUtil;
@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/users")
 @Api(value = "UsersCtrl", description = "Users API endpoints for CURD operation.")
-public class UsersController {
+public class UserController {
 	
 	@Autowired
 	private UserService userService;
@@ -143,7 +143,7 @@ public class UsersController {
     		value = "Deleting users by unique reference number user-id.", 
     		notes = "Provides an DELETE API to remove entry from the users list.",
     		response = UserDTO.class)
-	public ResponseEntity<?> deleteUser(@PathVariable("id") final Long userId)	{
+	public ResponseEntity<UserDTO> deleteUser(@PathVariable("id") final Long userId)	{
 		
 		User user = this.userService.deleteUser(userId);
 		
