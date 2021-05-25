@@ -2,15 +2,16 @@ package com.users.services.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.users.exceptions.UserAlreadExistsException;
 import com.users.exceptions.UserNotFoundException;
-import com.users.model.dtos.UserDTO;
-import com.users.model.entities.User;
-import com.users.model.repositories.UserRepository;
+import com.users.models.dtos.UserDTO;
+import com.users.models.entities.User;
+import com.users.models.repositories.UserRepository;
 import com.users.services.UserService;
 import com.users.utils.ModelMapperUtil;
 
@@ -36,9 +37,11 @@ public class UserServiceImpl implements UserService {
 	 * @return
 	 */
 	@Override
-	public List<User> getAllUsers() {
+	public List<UserDTO> getAllUsers() {
 
-		return this.userRepository.findAll();
+		List<User> users = this.userRepository.findAll();
+		
+		return users.stream().map(UserDTO::mapToUserDTO).collect(Collectors.toList());
 	}
 
 	/**
@@ -48,15 +51,15 @@ public class UserServiceImpl implements UserService {
 	 * @return
 	 */
 	@Override
-	public User getUserById(Long id) {
+	public UserDTO getUserById(Long id) {
 
 		Optional<User> userOptional = this.userRepository.findById(id);
 
 		if(userOptional.isEmpty())	{
 			throw new UserNotFoundException(id);
 		}
-		
-		return userOptional.get();
+
+		return UserDTO.mapToUserDTO(userOptional.get());
 	}
 
 	/**
@@ -66,13 +69,15 @@ public class UserServiceImpl implements UserService {
 	 * @return
 	 */
 	@Override
-	public User addNewUserEntry(UserDTO userData) {
+	public UserDTO addNewUserEntry(UserDTO userData) {
 
 		if(this.userRepository.existsByMobileNumber(userData.getMobileNumber()))	{
 			throw new UserAlreadExistsException(userData.getMobileNumber());
 		}
-
-		return this.userRepository.saveAndFlush((User) ModelMapperUtil.map(userData, User.class));
+		
+		User user = this.userRepository.saveAndFlush((User) ModelMapperUtil.map(userData, User.class));
+		
+		return (UserDTO) ModelMapperUtil.map(user, UserDTO.class);
 	}
 
 
@@ -84,7 +89,7 @@ public class UserServiceImpl implements UserService {
 	 * @return
 	 */
 	@Override
-	public User updateExistingUser(Long id, UserDTO userData) {
+	public UserDTO updateExistingUser(Long id, UserDTO userData) {
 
 		if(!this.userRepository.existsById(id))	{
 			throw new UserNotFoundException(id);
@@ -96,7 +101,9 @@ public class UserServiceImpl implements UserService {
 		user.setCity(userData.getCity());
 		user.setMobileNumber(userData.getMobileNumber());
 		
-		return this.userRepository.saveAndFlush(user);
+		user = this.userRepository.saveAndFlush(user);
+		
+		return (UserDTO) ModelMapperUtil.map(user, UserDTO.class);
 	}
 
 	
@@ -108,7 +115,7 @@ public class UserServiceImpl implements UserService {
 	 * @return
 	 */
 	@Override
-	public User deleteUser(final Long id) {
+	public void deleteUser(final Long id) {
 
 		Optional<User> user = this.userRepository.findById(id);
 		
@@ -117,8 +124,6 @@ public class UserServiceImpl implements UserService {
 		} else {
 			throw new UserNotFoundException(id);
 		}
-		
-		return user.orElseGet(() -> null);
 	}
 
 	/**

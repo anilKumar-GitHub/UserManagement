@@ -1,9 +1,9 @@
-package com.users.model.dtos;
+package com.users.models.dtos;
 
 import java.util.Date;
 
 import com.users.controllers.UserController;
-import com.users.model.entities.User;
+import com.users.models.entities.User;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

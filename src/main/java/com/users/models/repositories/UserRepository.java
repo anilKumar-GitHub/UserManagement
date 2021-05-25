@@ -1,9 +1,9 @@
-package com.users.model.repositories;
+package com.users.models.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.users.model.entities.User;
+import com.users.models.entities.User;
 
 /**
  * JPA repository for CRUD operations.

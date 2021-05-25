@@ -10,7 +10,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-import com.users.model.dtos.AbstractDTO;
+import com.users.models.dtos.AbstractDTO;
 
 
 /**

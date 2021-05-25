@@ -1,7 +1,6 @@
 package com.users.controllers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.users.exceptions.UserNotFoundException;
-import com.users.model.dtos.UserDTO;
-import com.users.model.entities.User;
+import com.users.models.dtos.UserDTO;
+import com.users.models.entities.User;
 import com.users.services.UserService;
-import com.users.utils.ModelMapperUtil;
 import com.users.utils.RestResponseUtil;
 
 import io.swagger.annotations.Api;
@@ -54,11 +51,9 @@ public class UserController {
     		response = List.class)
 	public ResponseEntity<List<UserDTO>> getAllUsers()	{
 
-		List<User> users = this.userService.getAllUsers();
+		List<UserDTO> users = this.userService.getAllUsers();
 
-		List<UserDTO> respose = users.stream().map(UserDTO::mapToUserDTO).collect(Collectors.toList());
-		
-		return RestResponseUtil.responseEntity(respose, HttpStatus.OK);
+		return RestResponseUtil.responseEntity(users, HttpStatus.OK);
 	}
 	
 	
@@ -75,13 +70,9 @@ public class UserController {
     		response = UserDTO.class)
 	public ResponseEntity<UserDTO> getUserById(@PathVariable("id") final Long userId)	{
 
-		User user = this.userService.getUserById(userId);
-		
-		if(user == null)	{
-			throw new UserNotFoundException(userId);
-		}
+		UserDTO user = this.userService.getUserById(userId);
 
-		return RestResponseUtil.responseEntity(UserDTO.mapToUserDTO(user), HttpStatus.OK);
+		return RestResponseUtil.responseEntity(user, HttpStatus.OK);
 	}
 	
 
@@ -98,10 +89,9 @@ public class UserController {
     		response = UserDTO.class)
 	public ResponseEntity<UserDTO> addNewUser(@RequestBody UserDTO userData)	{
 
-		User user = this.userService.addNewUserEntry(userData);
+		UserDTO user = this.userService.addNewUserEntry(userData);
 
-		return RestResponseUtil.responseEntity(ModelMapperUtil
-			.map(user, UserDTO.class), HttpStatus.CREATED);
+		return RestResponseUtil.responseEntity(user, HttpStatus.CREATED);
 	}
 	
 	/**
@@ -118,11 +108,9 @@ public class UserController {
     		response = UserDTO.class)
 	public ResponseEntity<UserDTO> updateUser(@PathVariable("id") final Long userId, @RequestBody UserDTO userData)	{
 		
-		User user = this.userService.updateExistingUser(userId, userData);
+		UserDTO user = this.userService.updateExistingUser(userId, userData);
 		
-		UserDTO userDto = (UserDTO) ModelMapperUtil.map(user, UserDTO.class);
-		
-		return RestResponseUtil.responseEntity(userDto, HttpStatus.OK);
+		return RestResponseUtil.responseEntity(user, HttpStatus.OK);
 	}
 
 	
@@ -135,8 +123,9 @@ public class UserController {
 		
 		long count = this.userService.deleteAllUser();
 
-		return RestResponseUtil.responseEntity(count + " records deleted successfully.",HttpStatus.OK);
+		return RestResponseUtil.responseEntity(count + " records deleted successfully.", HttpStatus.OK);
 	}
+
 	
 	@DeleteMapping("/{id}")
     @ApiOperation(
@@ -145,10 +134,8 @@ public class UserController {
     		response = UserDTO.class)
 	public ResponseEntity<UserDTO> deleteUser(@PathVariable("id") final Long userId)	{
 		
-		User user = this.userService.deleteUser(userId);
-		
-		UserDTO userDto = (UserDTO) ModelMapperUtil.map(user, UserDTO.class);
-		
-		return RestResponseUtil.responseEntity(userDto, HttpStatus.OK);
+		this.userService.deleteUser(userId);
+
+		return RestResponseUtil.responseEntity("User deleted successfully.", HttpStatus.OK);
 	}
 }

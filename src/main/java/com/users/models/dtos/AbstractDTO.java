@@ -1,4 +1,4 @@
-package com.users.model.dtos;
+package com.users.models.dtos;
 
 import java.util.ArrayList;
 import java.util.HashMap;

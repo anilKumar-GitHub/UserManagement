@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +23,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.users.model.dtos.UserDTO;
+import com.users.models.dtos.UserDTO;
+import com.users.providers.UserServiceDataProvider;
 
 
 /**
@@ -114,9 +114,7 @@ public class UserManagementApplicationTests	{
 	public void createUsersEntries() throws Exception	{
 
 		String uri = "/users";
-		UserDTO dto = UserDTO.builder().name("Rajesh")
-				.dateOfBirth(new Date()).city("Gulbarga")
-				.mobileNumber("9060544810").build();
+		UserDTO dto = UserServiceDataProvider.getUser();
 
 		String inputJSON = this.mapToJson(dto);
 		MvcResult mvcResult = this.mvc.perform(
@@ -131,7 +129,7 @@ public class UserManagementApplicationTests	{
 
 		assertEquals(201, status);
 		assertEquals("Rajesh", user.getName());
-		assertEquals("9060544810", user.getMobileNumber());
+		assertEquals("9876543215", user.getMobileNumber());
 	}
 
 
@@ -169,12 +167,9 @@ public class UserManagementApplicationTests	{
 		String uri = "/users/4";
 		
 		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.delete(uri)).andReturn();
+
 		int status = mvcResult.getResponse().getStatus();
-		
-		String content = mvcResult.getResponse().getContentAsString();
-		UserDTO user = mapFromJson(content, UserDTO.class);
 
 		assertEquals(200, status);
-		assertEquals(user.getName(), "Dev");
 	}
 }

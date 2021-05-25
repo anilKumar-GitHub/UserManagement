@@ -2,8 +2,7 @@ package com.users.services;
 
 import java.util.List;
 
-import com.users.model.dtos.UserDTO;
-import com.users.model.entities.User;
+import com.users.models.dtos.UserDTO;
 
 /**
  * User service interface
@@ -18,7 +17,7 @@ public interface UserService {
 	 * 
 	 * @return
 	 */
-	List<User> getAllUsers();
+	List<UserDTO> getAllUsers();
 
 	/**
 	 * Get user by user-id
@@ -26,7 +25,7 @@ public interface UserService {
 	 * @param id
 	 * @return
 	 */
-	User getUserById(final Long id);
+	UserDTO getUserById(final Long id);
 
 	/**
 	 * Adding new user to list.
@@ -34,7 +33,7 @@ public interface UserService {
 	 * @param userData
 	 * @return
 	 */
-	User addNewUserEntry(UserDTO userData);
+	UserDTO addNewUserEntry(UserDTO userData);
 
 	/**
 	 * Updating existing user by user id
@@ -43,7 +42,7 @@ public interface UserService {
 	 * @param userData
 	 * @return
 	 */
-	User updateExistingUser(final Long id, UserDTO userData);
+	UserDTO updateExistingUser(final Long id, UserDTO userData);
 
 	/**
 	 * Delete all user, restricted operation.
@@ -58,5 +57,5 @@ public interface UserService {
 	 * @param id
 	 * @return
 	 */
-	User deleteUser(final Long id);
+	void deleteUser(final Long id);
 }
