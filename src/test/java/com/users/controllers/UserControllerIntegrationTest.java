@@ -1,6 +1,5 @@
 package com.users.controllers;
 
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,25 +29,19 @@ import com.users.utils.StringUtil;
 @WebMvcTest(value = UserController.class)
 public class UserControllerIntegrationTest {
 
-	
 	@Autowired
 	MockMvc mockMvc;
 
 	@MockBean
 	UserService userService;
 
-	/** Mock Data provider is not getting eligible for auto-wire */
-	MockDataProvider mockData = new MockDataProvider();
-	
-	@Test
+
 	public void testGetAllUsers() throws Exception	{
 		
-		String URI = "/users";
-		
 		Mockito.when(userService.getAllUsers())
-		.thenReturn(mockData.getUserDTOList());
+		.thenReturn(MockDataProvider.getUserDTOList());
 		
-		RequestBuilder builder = MockMvcRequestBuilders.get(URI).accept(MediaType.APPLICATION_JSON);
+		RequestBuilder builder = MockMvcRequestBuilders.get("/users").accept(MediaType.APPLICATION_JSON);
 		
 		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
 		MockHttpServletResponse response = mvcResult.getResponse();
@@ -61,13 +54,12 @@ public class UserControllerIntegrationTest {
 	@Test
 	public void testGetUsersById() throws Exception	{
 		
-		String URI = "/users/104";
-		UserDTO mockedUser = mockData.getUserDTO();
+		UserDTO mockedUser = MockDataProvider.getUserDTO();
 
 		Mockito.when(userService.getUserById(Mockito.anyLong()))
 		.thenReturn(mockedUser);
 		
-		RequestBuilder builder = MockMvcRequestBuilders.get(URI).accept(MediaType.APPLICATION_JSON);
+		RequestBuilder builder = MockMvcRequestBuilders.get("/users/104").accept(MediaType.APPLICATION_JSON);
 		
 		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
 		MockHttpServletResponse response = mvcResult.getResponse();
@@ -82,16 +74,15 @@ public class UserControllerIntegrationTest {
 	@Test
 	public void testGetUsersByNameFilter() throws Exception	{
 		
-		String URI = "/users/fname/Ra";
 		
 		Mockito.when(userService.getUserByNameLike(Mockito.any()))
 		.thenReturn(
-				mockData.getUserDTOList().stream()
+				MockDataProvider.getUserDTOList().stream()
 				.filter(f -> f.getFirstName().startsWith("Ra"))
 				.collect(Collectors.toList())
 			);
 		
-		RequestBuilder builder = MockMvcRequestBuilders.get(URI).accept(MediaType.APPLICATION_JSON);
+		RequestBuilder builder = MockMvcRequestBuilders.get("/users/fname/Ra").accept(MediaType.APPLICATION_JSON);
 		
 		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
 		MockHttpServletResponse response = mvcResult.getResponse();
@@ -103,13 +94,12 @@ public class UserControllerIntegrationTest {
 	@Test
 	public void testCreateUsers() throws Exception	{
 		
-		String URI = "/users";
-		UserDTO mockedUser = mockData.getNewUserDTO();
+		UserDTO mockedUser = MockDataProvider.getNewUserDTO();
 		
 		Mockito.when(userService.addNewUserEntry(mockedUser))
 		.thenReturn(mockedUser);
 		
-		RequestBuilder builder = MockMvcRequestBuilders.post(URI)
+		RequestBuilder builder = MockMvcRequestBuilders.post("/users")
 				.accept(MediaType.APPLICATION_JSON)
 				.content(StringUtil.mapToJson(mockedUser))
 				.contentType(MediaType.APPLICATION_JSON);
@@ -127,14 +117,13 @@ public class UserControllerIntegrationTest {
 	@Test
 	public void testUpadteUser() throws Exception	{
 		
-		String URI = "/users/1";
-		UserDTO mockedUser = mockData.getExistingUserDTO();
+		UserDTO mockedUser = MockDataProvider.getExistingUserDTO();
 		mockedUser.setFirstName("Chandrakanth");
 		
 		Mockito.when(userService.updateExistingUser(Mockito.anyLong(), Mockito.any(UserDTO.class)))
 		.thenReturn(mockedUser);
 		
-		RequestBuilder builder = MockMvcRequestBuilders.put(URI)
+		RequestBuilder builder = MockMvcRequestBuilders.put("/users/1")
 				.accept(MediaType.APPLICATION_JSON)
 				.content(StringUtil.mapToJson(mockedUser))
 				.contentType(MediaType.APPLICATION_JSON);
@@ -142,19 +131,17 @@ public class UserControllerIntegrationTest {
 		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
 		MockHttpServletResponse response = mvcResult.getResponse();
 		
-		//UserDTO updateUser = StringUtil.mapFromJson(response.getContentAsString(), UserDTO.class);
+		UserDTO updateUser = StringUtil.mapFromJson(response.getContentAsString(), UserDTO.class);
 		
 		assertEquals(HttpStatus.OK.value(), response.getStatus());
-		//assertNotNull(mockedUser.getFirstName(), updateUser.getFirstName());
+		assertNotNull(mockedUser.getFirstName(), updateUser.getFirstName());
 	}	
 	
 	
 	@Test
 	public void testDeleteUserById() throws Exception	{
 		
-		String URI = "/users/1";
-
-		RequestBuilder builder = MockMvcRequestBuilders.delete(URI)
+		RequestBuilder builder = MockMvcRequestBuilders.delete("/users/1")
 				.accept(MediaType.APPLICATION_JSON);
 		
 		MvcResult mvcResult = mockMvc.perform(builder).andReturn();

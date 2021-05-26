@@ -39,21 +39,16 @@ public class UserControllerTest {
 
 	@Mock
 	UserService userService;
-	
-	
-	/**
-	 * found some issue while using with @autowired
-	 * so direct mock provider is initialised.
-	 */
-	MockDataProvider mockData = new MockDataProvider();
 
+	
+	
 	/**
 	 * Test case for get all users
 	 */
 	@Test
 	public void getAllUsersTest()	{
 
-		List<UserDTO> list = mockData.getUserDTOList();
+		List<UserDTO> list = MockDataProvider.getUserDTOList();
 
 		when(userService.getAllUsers()).thenReturn(list);
 
@@ -73,7 +68,7 @@ public class UserControllerTest {
 	@Test
 	public void getUserByIdTest()	{
 
-		when(userService.getUserById(104L)).thenReturn(mockData.getUserDTO());
+		when(userService.getUserById(104L)).thenReturn(MockDataProvider.getUserDTO());
 
 		UserDTO user = userController.getUserById(104L).getBody();
 
@@ -105,9 +100,9 @@ public class UserControllerTest {
 	@Test
 	public void createUserByIdTest()	{
 
-		UserDTO newUser = mockData.getNewUserDTO();
+		UserDTO newUser = MockDataProvider.getNewUserDTO();
 
-		when(userService.addNewUserEntry(any(UserDTO.class))).thenReturn(mockData.getNewUserDTO());
+		when(userService.addNewUserEntry(any(UserDTO.class))).thenReturn(MockDataProvider.getNewUserDTO());
 
 		ResponseEntity<UserDTO> reponse = userController.addNewUser(newUser);
 
@@ -122,8 +117,8 @@ public class UserControllerTest {
 	@Test
 	public void updateUserTest()	{
 
-		UserDTO userDto = mockData.getExistingUserDTO();
-		UserDTO user = mockData.getUpdatedUserDTO();
+		UserDTO userDto = MockDataProvider.getExistingUserDTO();
+		UserDTO user = MockDataProvider.getUpdatedUserDTO();
 
 		when(userService.updateExistingUser(21L, userDto)).thenReturn(user);
 
@@ -141,7 +136,7 @@ public class UserControllerTest {
 	@Test
 	public void deleteUserByIdTest()	{
 
-		UserDTO user = mockData.getUserDTO();
+		UserDTO user = MockDataProvider.getUserDTO();
 
 		verify(userService, times(0)).deleteUser(user.getId());
 	}

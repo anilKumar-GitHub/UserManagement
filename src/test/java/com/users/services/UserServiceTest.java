@@ -37,14 +37,12 @@ public class UserServiceTest {
 
 	@Mock
 	UserRepository userRepository;
-	
 
-	MockDataProvider mockData = new MockDataProvider();
 
 	@Test
 	public void getAllUsersTest()	{
 
-		List<User> list = mockData.getUserList();
+		List<User> list = MockDataProvider.getUserList();
 		
 		when(userRepository.findAll()).thenReturn(list);
 
@@ -63,7 +61,7 @@ public class UserServiceTest {
 	public void getUserByIdTest()	{
 
 		when(userRepository.findById(104L))
-		.thenReturn(Optional.of(mockData.getUser()));
+		.thenReturn(Optional.of(MockDataProvider.getUser()));
 
 		UserDTO user = userService.getUserById(104L);
 
@@ -80,7 +78,7 @@ public class UserServiceTest {
 	public void getUserByIdTest2()	{
 
 		when(userRepository.findById(104L))
-		.thenReturn(Optional.of(mockData.getUser()));
+		.thenReturn(Optional.of(MockDataProvider.getUser()));
 
 		UserDTO user = userService.getUserById(104L);
 
@@ -95,8 +93,8 @@ public class UserServiceTest {
 	@Test
 	public void createUserByIdTest()	{
 
-		UserDTO userDto = mockData.getNewUserDTO();
-		User user = mockData.getNewUser();
+		UserDTO userDto = MockDataProvider.getNewUserDTO();
+		User user = MockDataProvider.getNewUser();
 
 		when(userRepository.saveAndFlush(any(User.class))).thenReturn(user);
 
@@ -113,8 +111,8 @@ public class UserServiceTest {
 	@Test
 	public void updateUserTest()	{
 
-		UserDTO userDto = mockData.getExistingUserDTO();
-		User user = mockData.getUpdatedUser();
+		UserDTO userDto = MockDataProvider.getExistingUserDTO();
+		User user = MockDataProvider.getUpdatedUser();
 
 		when(userRepository.existsById(any(Long.class))).thenReturn(true);
 		when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
