@@ -33,28 +33,12 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/users")
-@Api(value = "UsersCtrl", description = "Users API endpoints for CURD operation.")
+@Api(value = "UserController", description = "Users API endpoints for CURD operation.")
 public class UserController {
 	
 	@Autowired
-	private UserService userService;
-	
-	/*
-	 * Test cases are failing when validating the request body, 
-	 * for test case execution commented the  @Validated annotation
-	 */ 
-	/*
+	private UserService userService;	
 
-	@Autowired
-	private UserValidator userValidator;
-
-
-	@InitBinder
-	private void initBinder(WebDataBinder binder)	{
-		binder.setValidator(userValidator);
-	}
-	*/
-	
 	/**
 	 * Get all users.
 	 * 
@@ -114,9 +98,7 @@ public class UserController {
     		value = "Adding new user entry to Users list.", 
     		notes = "Provides an POST API to add entry to users list.",
     		response = UserDTO.class)
-	/* Test cases are failing when validating the request body, 
-	 * for test case execution commented the  @Validated annotation*/
-	public ResponseEntity<UserDTO> addNewUser(/* @Validated */ @RequestBody UserDTO userData)	{
+	public ResponseEntity<UserDTO> addNewUser(@RequestBody UserDTO userData)	{
 
 		return RestResponseUtil.responseEntity(
 				this.userService.addNewUserEntry(userData), 
@@ -137,7 +119,7 @@ public class UserController {
     		notes = "Provides an PUT API to update entry from the users list.",
     		response = UserDTO.class)
 	public ResponseEntity<UserDTO> updateUser(@PathVariable("id") final Long userId, 
-			/* @Validated */@RequestBody UserDTO userData)	{
+			@RequestBody UserDTO userData)	{
 		
 		return RestResponseUtil.responseEntity(this.userService.updateExistingUser(userId, userData));
 	}

@@ -1,143 +1,152 @@
 package com.users.controllers;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.users.models.dtos.UserDTO;
 import com.users.providers.MockDataProvider;
 import com.users.services.UserService;
+import com.users.utils.StringUtil;
 
-/**
- * 
- * Test case for UserController class using Mockito.
- * 
- * @author anilKumar
- *
- */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@WebMvcTest(value = UserController.class)
 public class UserControllerTest {
 
-	@InjectMocks
-	UserController userController;
+	@Autowired
+	MockMvc mockMvc;
 
-	@Mock
+	@MockBean
 	UserService userService;
 
-	
-	
-	/**
-	 * Test case for get all users
-	 */
-	@Test
-	public void getAllUsersTest()	{
 
-		List<UserDTO> list = MockDataProvider.getUserDTOList();
-
-		when(userService.getAllUsers()).thenReturn(list);
-
-		ResponseEntity<List<UserDTO>> response = userController.getAllUsers();
-		List<UserDTO> usersList = response.getBody();
-
-		assertTrue(usersList.size() > 0);
-		assertEquals(3, usersList.size());
-
-		verify(userService, times(1)).getAllUsers();
-	}
-
-
-	/**
-	 * Test case: Get user by id
-	 */
-	@Test
-	public void getUserByIdTest()	{
-
-		when(userService.getUserById(104L)).thenReturn(MockDataProvider.getUserDTO());
-
-		UserDTO user = userController.getUserById(104L).getBody();
-
-		assertNotNull(user);
-		assertEquals("Rajesh", user.getFirstName());
-		assertEquals("Bangalore", user.getCity());
-		assertEquals("9876543215", user.getMobileNumber());
-	}
-
-
-	/**
-	 * Negative test case for get user by id
-	 */
-	@Test
-	public void getUserByIdTest2()	{
-
-		// user id 110 is not present in list
-		when(userService.getUserById(110L)).thenReturn(null);
-
-		UserDTO user = userController.getUserById(110L).getBody();
-
-		assertNull(user);
-	}
-
-
-	/**
-	 * Test case for adding new user
-	 */
-	@Test
-	public void createUserByIdTest()	{
-
-		UserDTO newUser = MockDataProvider.getNewUserDTO();
-
-		when(userService.addNewUserEntry(any(UserDTO.class))).thenReturn(MockDataProvider.getNewUserDTO());
-
-		ResponseEntity<UserDTO> reponse = userController.addNewUser(newUser);
-
-		assertNotNull(reponse.getBody());
-		assertEquals(HttpStatus.CREATED, reponse.getStatusCode());
-	}
-
-
-	/**
-	 * Test case for adding new user
-	 */
-	@Test
-	public void updateUserTest()	{
-
-		UserDTO userDto = MockDataProvider.getExistingUserDTO();
-		UserDTO user = MockDataProvider.getUpdatedUserDTO();
-
-		when(userService.updateExistingUser(21L, userDto)).thenReturn(user);
-
-		ResponseEntity<UserDTO> response = userController.updateUser(21L, userDto);
-
-		assertNotNull(response.getBody());
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertNotEquals("Karna", response.getBody().getFirstName());
+	public void testGetAllUsers() throws Exception	{
+		
+		Mockito.when(userService.getAllUsers())
+		.thenReturn(MockDataProvider.getUserDTOList());
+		
+		RequestBuilder builder = MockMvcRequestBuilders.get("/users").accept(MediaType.APPLICATION_JSON);
+		
+		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
+		MockHttpServletResponse response = mvcResult.getResponse();
+		
+		assertNotNull(response.getContentAsString());
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
 	}
 	
 	
-	/**
-	 * Test case for adding new user
-	 */
 	@Test
-	public void deleteUserByIdTest()	{
+	public void testGetUsersById() throws Exception	{
+		
+		UserDTO mockedUser = MockDataProvider.getUserDTO();
 
-		UserDTO user = MockDataProvider.getUserDTO();
-
-		verify(userService, times(0)).deleteUser(user.getId());
+		Mockito.when(userService.getUserById(Mockito.anyLong()))
+		.thenReturn(mockedUser);
+		
+		RequestBuilder builder = MockMvcRequestBuilders.get("/users/104").accept(MediaType.APPLICATION_JSON);
+		
+		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
+		MockHttpServletResponse response = mvcResult.getResponse();
+		
+		UserDTO expectedUser = StringUtil.mapFromJson(response.getContentAsString(), UserDTO.class);
+		
+		assertEquals(mockedUser, expectedUser);
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
 	}
+	
+
+	@Test
+	public void testGetUsersByNameFilter() throws Exception	{
+		
+		
+		Mockito.when(userService.getUserByNameLike(Mockito.any()))
+		.thenReturn(
+				MockDataProvider.getUserDTOList().stream()
+				.filter(f -> f.getFirstName().startsWith("Ra"))
+				.collect(Collectors.toList())
+			);
+		
+		RequestBuilder builder = MockMvcRequestBuilders.get("/users/fname/Ra").accept(MediaType.APPLICATION_JSON);
+		
+		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
+		MockHttpServletResponse response = mvcResult.getResponse();
+
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+	}
+	
+	
+	@Test
+	public void testCreateUsers() throws Exception	{
+		
+		UserDTO mockedUser = MockDataProvider.getNewUserDTO();
+		
+		Mockito.when(userService.addNewUserEntry(mockedUser))
+		.thenReturn(mockedUser);
+		
+		RequestBuilder builder = MockMvcRequestBuilders.post("/users")
+				.accept(MediaType.APPLICATION_JSON)
+				.content(StringUtil.mapToJson(mockedUser))
+				.contentType(MediaType.APPLICATION_JSON);
+		
+		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
+		MockHttpServletResponse response = mvcResult.getResponse();
+		
+		UserDTO expectedUser = StringUtil.mapFromJson(response.getContentAsString(), UserDTO.class);
+		
+		assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+		assertEquals(mockedUser, expectedUser);
+	}	
+	
+	
+	@Test
+	public void testUpadteUser() throws Exception	{
+		
+		UserDTO mockedUser = MockDataProvider.getExistingUserDTO();
+		mockedUser.setFirstName("Chandrakanth");
+		
+		Mockito.when(userService.updateExistingUser(Mockito.anyLong(), Mockito.any(UserDTO.class)))
+		.thenReturn(mockedUser);
+		
+		RequestBuilder builder = MockMvcRequestBuilders.put("/users/1")
+				.accept(MediaType.APPLICATION_JSON)
+				.content(StringUtil.mapToJson(mockedUser))
+				.contentType(MediaType.APPLICATION_JSON);
+		
+		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
+		MockHttpServletResponse response = mvcResult.getResponse();
+		
+		UserDTO updateUser = StringUtil.mapFromJson(response.getContentAsString(), UserDTO.class);
+		
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+		assertNotNull(mockedUser.getFirstName(), updateUser.getFirstName());
+	}	
+	
+	
+	@Test
+	public void testDeleteUserById() throws Exception	{
+		
+		RequestBuilder builder = MockMvcRequestBuilders.delete("/users/1")
+				.accept(MediaType.APPLICATION_JSON);
+		
+		MvcResult mvcResult = mockMvc.perform(builder).andReturn();
+		MockHttpServletResponse response = mvcResult.getResponse();
+
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+	}	
 }
