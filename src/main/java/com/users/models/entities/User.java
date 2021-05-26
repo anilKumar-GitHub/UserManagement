@@ -1,18 +1,12 @@
 package com.users.models.entities;
 
-import java.util.Date;
-
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import lombok.Data;
-
 /**
  * User entity which maps to user table in database
  * 
@@ -31,13 +25,11 @@ public class User {
 	@GeneratedValue(generator = "user_table_seq")
     private Long id;
 	
-	@Column
-    private String name;
+	@Column(name = "FIRST_NAME")
+    private String firstName;
 
-	@Column(name = "dob")
-	@Basic
-	@Temporal(TemporalType.DATE)
-	private Date dateOfBirth;
+	@Column(name = "LAST_NAME")
+    private String lastName;
 
 	@Column
 	private String city;
@@ -61,12 +53,12 @@ public class User {
 	 * @param mobileNum
 	 * @param city
 	 */
-	public User(Long id, String name, Date dob,  String city, String mobileNum)	{
+	public User(Long id, String firstName, String lastName, String city, String mobileNumber)	{
 		
 		this.id = id;
-		this.name = name;
-		this.dateOfBirth = dob;
-		this.mobileNumber = mobileNum;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.city = city;
+		this.mobileNumber = mobileNumber;
 	}
 }

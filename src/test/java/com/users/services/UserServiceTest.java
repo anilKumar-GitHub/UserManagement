@@ -5,9 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -22,8 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.users.models.dtos.UserDTO;
 import com.users.models.entities.User;
 import com.users.models.repositories.UserRepository;
-import com.users.providers.UserServiceDataProvider;
-import com.users.providers.UserRepositoryDataProvider;
+import com.users.providers.MockDataProvider;
 import com.users.services.impl.UserServiceImpl;
 
 /**
@@ -41,11 +37,14 @@ public class UserServiceTest {
 
 	@Mock
 	UserRepository userRepository;
+	
+
+	MockDataProvider mockData = new MockDataProvider();
 
 	@Test
 	public void getAllUsersTest()	{
 
-		List<User> list = UserRepositoryDataProvider.getUserList();
+		List<User> list = mockData.getUserList();
 		
 		when(userRepository.findAll()).thenReturn(list);
 
@@ -64,11 +63,11 @@ public class UserServiceTest {
 	public void getUserByIdTest()	{
 
 		when(userRepository.findById(104L))
-		.thenReturn(Optional.of(UserRepositoryDataProvider.getUser()));
+		.thenReturn(Optional.of(mockData.getUser()));
 
 		UserDTO user = userService.getUserById(104L);
 
-		assertNotEquals(null, user.getName());
+		assertNotEquals(null, user.getFirstName());
 		assertEquals("Bangalore", user.getCity());
 		assertEquals("9876543215", user.getMobileNumber());
 	}
@@ -81,7 +80,7 @@ public class UserServiceTest {
 	public void getUserByIdTest2()	{
 
 		when(userRepository.findById(104L))
-		.thenReturn(Optional.of(UserRepositoryDataProvider.getUser()));
+		.thenReturn(Optional.of(mockData.getUser()));
 
 		UserDTO user = userService.getUserById(104L);
 
@@ -96,8 +95,8 @@ public class UserServiceTest {
 	@Test
 	public void createUserByIdTest()	{
 
-		UserDTO userDto = UserServiceDataProvider.getNewUser();
-		User user = UserRepositoryDataProvider.getNewUser();
+		UserDTO userDto = mockData.getNewUserDTO();
+		User user = mockData.getNewUser();
 
 		when(userRepository.saveAndFlush(any(User.class))).thenReturn(user);
 
@@ -114,8 +113,8 @@ public class UserServiceTest {
 	@Test
 	public void updateUserTest()	{
 
-		UserDTO userDto = UserServiceDataProvider.getExistingUser();
-		User user = UserRepositoryDataProvider.getUpdatedUser();
+		UserDTO userDto = mockData.getExistingUserDTO();
+		User user = mockData.getUpdatedUser();
 
 		when(userRepository.existsById(any(Long.class))).thenReturn(true);
 		when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));

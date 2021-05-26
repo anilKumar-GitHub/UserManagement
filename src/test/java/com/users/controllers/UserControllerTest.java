@@ -21,7 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.users.models.dtos.UserDTO;
-import com.users.providers.UserServiceDataProvider;
+import com.users.providers.MockDataProvider;
 import com.users.services.UserService;
 
 /**
@@ -39,6 +39,13 @@ public class UserControllerTest {
 
 	@Mock
 	UserService userService;
+	
+	
+	/**
+	 * found some issue while using with @autowired
+	 * so direct mock provider is initialised.
+	 */
+	MockDataProvider mockData = new MockDataProvider();
 
 	/**
 	 * Test case for get all users
@@ -46,7 +53,7 @@ public class UserControllerTest {
 	@Test
 	public void getAllUsersTest()	{
 
-		List<UserDTO> list = UserServiceDataProvider.getUserList();
+		List<UserDTO> list = mockData.getUserDTOList();
 
 		when(userService.getAllUsers()).thenReturn(list);
 
@@ -66,12 +73,12 @@ public class UserControllerTest {
 	@Test
 	public void getUserByIdTest()	{
 
-		when(userService.getUserById(104L)).thenReturn(UserServiceDataProvider.getUser());
+		when(userService.getUserById(104L)).thenReturn(mockData.getUserDTO());
 
 		UserDTO user = userController.getUserById(104L).getBody();
 
 		assertNotNull(user);
-		assertEquals("Rajesh", user.getName());
+		assertEquals("Rajesh", user.getFirstName());
 		assertEquals("Bangalore", user.getCity());
 		assertEquals("9876543215", user.getMobileNumber());
 	}
@@ -98,9 +105,9 @@ public class UserControllerTest {
 	@Test
 	public void createUserByIdTest()	{
 
-		UserDTO newUser = UserServiceDataProvider.getNewUser();
+		UserDTO newUser = mockData.getNewUserDTO();
 
-		when(userService.addNewUserEntry(any(UserDTO.class))).thenReturn(UserServiceDataProvider.getNewUser());
+		when(userService.addNewUserEntry(any(UserDTO.class))).thenReturn(mockData.getNewUserDTO());
 
 		ResponseEntity<UserDTO> reponse = userController.addNewUser(newUser);
 
@@ -115,8 +122,8 @@ public class UserControllerTest {
 	@Test
 	public void updateUserTest()	{
 
-		UserDTO userDto = UserServiceDataProvider.getExistingUser();
-		UserDTO user = UserServiceDataProvider.getUpdatedUser();
+		UserDTO userDto = mockData.getExistingUserDTO();
+		UserDTO user = mockData.getUpdatedUserDTO();
 
 		when(userService.updateExistingUser(21L, userDto)).thenReturn(user);
 
@@ -124,7 +131,7 @@ public class UserControllerTest {
 
 		assertNotNull(response.getBody());
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertNotEquals("Karna", response.getBody().getName());
+		assertNotEquals("Karna", response.getBody().getFirstName());
 	}
 	
 	
@@ -134,9 +141,8 @@ public class UserControllerTest {
 	@Test
 	public void deleteUserByIdTest()	{
 
-		UserDTO user = UserServiceDataProvider.getUser();
+		UserDTO user = mockData.getUserDTO();
 
 		verify(userService, times(0)).deleteUser(user.getId());
-
 	}
 }

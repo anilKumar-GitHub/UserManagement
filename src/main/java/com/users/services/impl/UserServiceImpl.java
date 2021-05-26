@@ -63,6 +63,19 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
+	 * Get user by user-id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public List<UserDTO> getUserByNameLike(String firstName) {
+
+		return this.userRepository.findByFirstNameLike(firstName + "%")
+				.stream().map(UserDTO::mapToUserDTO).collect(Collectors.toList());
+	}
+
+	/**
 	 * Adding new user to list.
 	 * 
 	 * @param userData
@@ -96,8 +109,8 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		User user = this.userRepository.findById(id).get();
-		user.setName(userData.getName());
-		user.setDateOfBirth(userData.getDateOfBirth());
+		user.setFirstName(userData.getFirstName());
+		user.setLastName(userData.getLastName());
 		user.setCity(userData.getCity());
 		user.setMobileNumber(userData.getMobileNumber());
 		

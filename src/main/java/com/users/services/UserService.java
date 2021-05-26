@@ -28,6 +28,14 @@ public interface UserService {
 	UserDTO getUserById(final Long id);
 
 	/**
+	 * Get user by user-id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	List<UserDTO> getUserByNameLike(String firstName);
+
+	/**
 	 * Adding new user to list.
 	 * 
 	 * @param userData
